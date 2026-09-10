@@ -1,4 +1,3 @@
-```python
 import os
 import sqlite3
 import asyncio
@@ -13,12 +12,7 @@ from aiogram.types import (
     WebAppInfo
 )
 from aiogram.filters import CommandStart, Command
-from aiogram.fsm.context import FSMContext
 
-
-# =========================================================
-# CONFIG
-# =========================================================
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
@@ -27,20 +21,17 @@ if not BOT_TOKEN:
 
 OWNER_ID = 8113271428
 
-# Mini App URL
 WEBAPP_URL = "https://abdulvadud001.github.io/anivora/"
-
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-
-# =========================================================
-# DATABASE
-# =========================================================
-
 DB_NAME = "anivora.db"
 
+
+# =========================
+# DATABASE
+# =========================
 
 def get_db():
     conn = sqlite3.connect(DB_NAME)
@@ -49,7 +40,6 @@ def get_db():
 
 
 def init_db():
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -88,7 +78,6 @@ def init_db():
 
 
 def add_user(user):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -119,7 +108,6 @@ def add_user(user):
 
 
 def set_language(user_id, language):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -134,7 +122,6 @@ def set_language(user_id, language):
 
 
 def get_language(user_id):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -144,7 +131,6 @@ def get_language(user_id):
     )
 
     row = cur.fetchone()
-
     conn.close()
 
     if row:
@@ -154,7 +140,6 @@ def get_language(user_id):
 
 
 def add_history(user_id, title, content_type):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -174,7 +159,6 @@ def add_history(user_id, title, content_type):
 
 
 def add_favorite(user_id, title, content_type):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -188,9 +172,7 @@ def add_favorite(user_id, title, content_type):
         content_type
     ))
 
-    exists = cur.fetchone()
-
-    if exists:
+    if cur.fetchone():
         conn.close()
         return False
 
@@ -212,7 +194,6 @@ def add_favorite(user_id, title, content_type):
 
 
 def remove_favorite(user_id, title, content_type):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -230,7 +211,6 @@ def remove_favorite(user_id, title, content_type):
 
 
 def get_favorites(user_id):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -242,14 +222,12 @@ def get_favorites(user_id):
     """, (user_id,))
 
     rows = cur.fetchall()
-
     conn.close()
 
     return rows
 
 
 def get_history(user_id):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -262,14 +240,12 @@ def get_history(user_id):
     """, (user_id,))
 
     rows = cur.fetchall()
-
     conn.close()
 
     return rows
 
 
 def get_user_stats(user_id):
-
     conn = get_db()
     cur = conn.cursor()
 
@@ -277,14 +253,12 @@ def get_user_stats(user_id):
         "SELECT COUNT(*) FROM history WHERE user_id = ?",
         (user_id,)
     )
-
     history_count = cur.fetchone()[0]
 
     cur.execute(
         "SELECT COUNT(*) FROM favorites WHERE user_id = ?",
         (user_id,)
     )
-
     favorites_count = cur.fetchone()[0]
 
     conn.close()
@@ -293,12 +267,10 @@ def get_user_stats(user_id):
 
 
 def get_total_users():
-
     conn = get_db()
     cur = conn.cursor()
 
     cur.execute("SELECT COUNT(*) FROM users")
-
     result = cur.fetchone()[0]
 
     conn.close()
@@ -306,9 +278,9 @@ def get_total_users():
     return result
 
 
-# =========================================================
+# =========================
 # LANGUAGES
-# =========================================================
+# =========================
 
 LANGUAGES = {
     "uz": "🇺🇿 O‘zbekcha",
@@ -325,11 +297,9 @@ LANGUAGES = {
 
 
 def language_keyboard():
-
     buttons = []
 
     for code, name in LANGUAGES.items():
-
         buttons.append([
             InlineKeyboardButton(
                 text=name,
@@ -340,15 +310,13 @@ def language_keyboard():
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 
 
-# =========================================================
+# =========================
 # MAIN MENU
-# =========================================================
+# =========================
 
 def main_menu():
-
     return InlineKeyboardMarkup(
         inline_keyboard=[
-
             [
                 InlineKeyboardButton(
                     text="🎌 Anime",
@@ -359,14 +327,12 @@ def main_menu():
                     callback_data="movie"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🔍 Global qidiruv",
                     callback_data="global_search"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="⭐ Sevimlilar",
@@ -377,7 +343,6 @@ def main_menu():
                     callback_data="history"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="👤 Profil",
@@ -388,147 +353,126 @@ def main_menu():
                     callback_data="pass"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="❓ Yordam",
                     callback_data="help"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🚀 AniVora Mini App",
                     web_app=WebAppInfo(url=WEBAPP_URL)
                 )
             ]
-
         ]
     )
 
 
-# =========================================================
+# =========================
 # ANIME MENU
-# =========================================================
+# =========================
 
 def anime_menu():
-
     return InlineKeyboardMarkup(
         inline_keyboard=[
-
             [
                 InlineKeyboardButton(
                     text="🆕 Yangi animelar",
                     callback_data="anime_new"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🔥 Mashhur",
                     callback_data="anime_popular"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🟢 Ongoing",
                     callback_data="anime_ongoing"
                 ),
-
                 InlineKeyboardButton(
                     text="✅ Completed",
                     callback_data="anime_completed"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🎲 Random",
                     callback_data="anime_random"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="⭐ Sevimlilar",
                     callback_data="anime_favorites"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🔙 Bosh menyu",
                     callback_data="home"
                 )
             ]
-
         ]
     )
 
 
-# =========================================================
+# =========================
 # MOVIE MENU
-# =========================================================
+# =========================
 
 def movie_menu():
-
     return InlineKeyboardMarkup(
         inline_keyboard=[
-
             [
                 InlineKeyboardButton(
                     text="🆕 Yangi kinolar",
                     callback_data="movie_new"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🔥 Mashhur",
                     callback_data="movie_popular"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🎭 Janrlar",
                     callback_data="movie_genres"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="📅 Yillar",
                     callback_data="movie_years"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="⭐ Sevimlilar",
                     callback_data="movie_favorites"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🔙 Bosh menyu",
                     callback_data="home"
                 )
             ]
-
         ]
     )
 
 
-# =========================================================
+# =========================
 # START
-# =========================================================
+# =========================
 
 @dp.message(CommandStart())
 async def start(message: Message):
-
     add_user(message.from_user)
 
     await message.answer(
@@ -539,13 +483,12 @@ async def start(message: Message):
     )
 
 
-# =========================================================
+# =========================
 # LANGUAGE
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data.startswith("lang:"))
 async def select_language(callback: CallbackQuery):
-
     language = callback.data.split(":")[1]
 
     set_language(
@@ -563,13 +506,12 @@ async def select_language(callback: CallbackQuery):
     await callback.answer("Til saqlandi ✅")
 
 
-# =========================================================
+# =========================
 # HOME
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "home")
 async def home(callback: CallbackQuery):
-
     await callback.message.edit_text(
         "✨ <b>AniVora</b>\n\n"
         "Anime, kino yoki boshqa bo‘limni tanlang:",
@@ -580,13 +522,12 @@ async def home(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # ANIME
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "anime")
 async def anime(callback: CallbackQuery):
-
     await callback.message.edit_text(
         "🎌 <b>Anime</b>\n\n"
         "Kerakli bo‘limni tanlang:",
@@ -596,27 +537,6 @@ async def anime(callback: CallbackQuery):
 
     await callback.answer()
 
-
-# =========================================================
-# MOVIE
-# =========================================================
-
-@dp.callback_query(F.data == "movie")
-async def movie(callback: CallbackQuery):
-
-    await callback.message.edit_text(
-        "🎬 <b>Kino</b>\n\n"
-        "Kerakli bo‘limni tanlang:",
-        reply_markup=movie_menu(),
-        parse_mode="HTML"
-    )
-
-    await callback.answer()
-
-
-# =========================================================
-# ANIME PLACEHOLDERS
-# =========================================================
 
 @dp.callback_query(
     F.data.in_({
@@ -644,9 +564,9 @@ async def anime_category(callback: CallbackQuery):
 
     await callback.message.edit_text(
         f"<b>{title}</b>\n\n"
-        "⏳ Bu bo‘limga AniList API ulanmoqda.\n\n"
+        "⏳ Anime API hali ulanmagan.\n\n"
         "Keyingi bosqichda bu yerda haqiqiy "
-        "anime posterlari, nomlari va ma’lumotlari chiqadi.",
+        "anime posterlari va ma’lumotlari chiqadi.",
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -669,9 +589,21 @@ async def anime_category(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
-# MOVIE PLACEHOLDERS
-# =========================================================
+# =========================
+# MOVIE
+# =========================
+
+@dp.callback_query(F.data == "movie")
+async def movie(callback: CallbackQuery):
+    await callback.message.edit_text(
+        "🎬 <b>Kino</b>\n\n"
+        "Kerakli bo‘limni tanlang:",
+        reply_markup=movie_menu(),
+        parse_mode="HTML"
+    )
+
+    await callback.answer()
+
 
 @dp.callback_query(
     F.data.in_({
@@ -697,7 +629,7 @@ async def movie_category(callback: CallbackQuery):
 
     await callback.message.edit_text(
         f"<b>{title}</b>\n\n"
-        "⏳ Bu bo‘limga kino API ulanmoqda.\n\n"
+        "⏳ Kino API hali ulanmagan.\n\n"
         "Keyingi bosqichda bu yerda haqiqiy "
         "kino posterlari va ma’lumotlari chiqadi.",
         reply_markup=InlineKeyboardMarkup(
@@ -722,13 +654,12 @@ async def movie_category(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # GLOBAL SEARCH
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "global_search")
 async def global_search(callback: CallbackQuery):
-
     await callback.message.edit_text(
         "🔍 <b>Global qidiruv</b>\n\n"
         "Anime yoki kino nomini yozing.\n\n"
@@ -736,9 +667,7 @@ async def global_search(callback: CallbackQuery):
         "• Naruto\n"
         "• One Piece\n"
         "• Avatar\n"
-        "• Spider-Man\n\n"
-        "⚡ Keyingi bosqichda bitta qidiruv "
-        "Anime + Kino natijalarini birga chiqaradi.",
+        "• Spider-Man",
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
                 [
@@ -755,30 +684,24 @@ async def global_search(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # FAVORITES
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "favorites")
 async def favorites(callback: CallbackQuery):
 
-    rows = get_favorites(
-        callback.from_user.id
-    )
+    rows = get_favorites(callback.from_user.id)
 
     if not rows:
-
         text = (
             "⭐ <b>Sevimlilar</b>\n\n"
             "Hozircha sevimlilaringiz yo‘q."
         )
-
     else:
-
         text = "⭐ <b>Sevimlilar</b>\n\n"
 
         for i, row in enumerate(rows, 1):
-
             icon = (
                 "🎌"
                 if row["content_type"] == "anime"
@@ -808,16 +731,10 @@ async def favorites(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
-# ANIME FAVORITES
-# =========================================================
-
 @dp.callback_query(F.data == "anime_favorites")
 async def anime_favorites(callback: CallbackQuery):
 
-    rows = get_favorites(
-        callback.from_user.id
-    )
+    rows = get_favorites(callback.from_user.id)
 
     anime_rows = [
         row for row in rows
@@ -825,21 +742,15 @@ async def anime_favorites(callback: CallbackQuery):
     ]
 
     if not anime_rows:
-
         text = (
             "⭐ <b>Anime sevimlilar</b>\n\n"
             "Hozircha sevimli anime yo‘q."
         )
-
     else:
-
         text = "⭐ <b>Anime sevimlilar</b>\n\n"
 
         for i, row in enumerate(anime_rows, 1):
-
-            text += (
-                f"{i}. 🎌 {row['title']}\n"
-            )
+            text += f"{i}. 🎌 {row['title']}\n"
 
     await callback.message.edit_text(
         text,
@@ -859,16 +770,10 @@ async def anime_favorites(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
-# MOVIE FAVORITES
-# =========================================================
-
 @dp.callback_query(F.data == "movie_favorites")
 async def movie_favorites(callback: CallbackQuery):
 
-    rows = get_favorites(
-        callback.from_user.id
-    )
+    rows = get_favorites(callback.from_user.id)
 
     movie_rows = [
         row for row in rows
@@ -876,21 +781,15 @@ async def movie_favorites(callback: CallbackQuery):
     ]
 
     if not movie_rows:
-
         text = (
             "⭐ <b>Kino sevimlilar</b>\n\n"
             "Hozircha sevimli kino yo‘q."
         )
-
     else:
-
         text = "⭐ <b>Kino sevimlilar</b>\n\n"
 
         for i, row in enumerate(movie_rows, 1):
-
-            text += (
-                f"{i}. 🎬 {row['title']}\n"
-            )
+            text += f"{i}. 🎬 {row['title']}\n"
 
     await callback.message.edit_text(
         text,
@@ -910,26 +809,21 @@ async def movie_favorites(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # HISTORY
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "history")
 async def history(callback: CallbackQuery):
 
-    rows = get_history(
-        callback.from_user.id
-    )
+    rows = get_history(callback.from_user.id)
 
     if not rows:
-
         text = (
             "🕘 <b>Xronologiya</b>\n\n"
             "Hozircha ko‘rilgan kontent yo‘q."
         )
-
     else:
-
         text = "🕘 <b>Xronologiya</b>\n\n"
 
         for i, row in enumerate(rows, 1):
@@ -963,9 +857,9 @@ async def history(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # PROFILE
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "profile")
 async def profile(callback: CallbackQuery):
@@ -996,7 +890,6 @@ async def profile(callback: CallbackQuery):
         text,
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
-
                 [
                     InlineKeyboardButton(
                         text="🚀 Mini App",
@@ -1005,14 +898,12 @@ async def profile(callback: CallbackQuery):
                         )
                     )
                 ],
-
                 [
                     InlineKeyboardButton(
                         text="🔙 Bosh menyu",
                         callback_data="home"
                     )
                 ]
-
             ]
         ),
         parse_mode="HTML"
@@ -1021,9 +912,9 @@ async def profile(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # PASS
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "pass")
 async def pass_menu(callback: CallbackQuery):
@@ -1036,25 +927,21 @@ async def pass_menu(callback: CallbackQuery):
         "🚫 Reklamasiz foydalanish\n"
         "⚡ Premium funksiyalar\n"
         "🎁 Maxsus imkoniyatlar\n\n"
-        "💳 To‘lov tizimlari keyingi bosqichda "
-        "ulanadi.",
+        "💳 To‘lov tizimlari keyingi bosqichda ulanadi.",
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
-
                 [
                     InlineKeyboardButton(
                         text="💎 Tariflarni ko‘rish",
                         callback_data="pass_plans"
                     )
                 ],
-
                 [
                     InlineKeyboardButton(
                         text="🔙 Bosh menyu",
                         callback_data="home"
                     )
                 ]
-
             ]
         ),
         parse_mode="HTML"
@@ -1062,10 +949,6 @@ async def pass_menu(callback: CallbackQuery):
 
     await callback.answer()
 
-
-# =========================================================
-# PASS PLANS
-# =========================================================
 
 @dp.callback_query(F.data == "pass_plans")
 async def pass_plans(callback: CallbackQuery):
@@ -1076,25 +959,21 @@ async def pass_plans(callback: CallbackQuery):
         "🗓 3 oy — 28 490 so‘m\n"
         "🗓 6 oy — 53 990 so‘m\n"
         "🗓 1 yil — 95 990 so‘m\n\n"
-        "💳 To‘lov tizimlari keyingi bosqichda "
-        "ulanadi.",
+        "💳 To‘lov tizimlari keyingi bosqichda ulanadi.",
         reply_markup=InlineKeyboardMarkup(
             inline_keyboard=[
-
                 [
                     InlineKeyboardButton(
                         text="🔙 Pass",
                         callback_data="pass"
                     )
                 ],
-
                 [
                     InlineKeyboardButton(
                         text="🏠 Bosh menyu",
                         callback_data="home"
                     )
                 ]
-
             ]
         ),
         parse_mode="HTML"
@@ -1103,9 +982,9 @@ async def pass_plans(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # HELP
-# =========================================================
+# =========================
 
 @dp.callback_query(F.data == "help")
 async def help_menu(callback: CallbackQuery):
@@ -1114,8 +993,7 @@ async def help_menu(callback: CallbackQuery):
         "❓ <b>AniVora yordam</b>\n\n"
         "🎌 <b>Anime</b> — anime bo‘limlari.\n\n"
         "🎬 <b>Kino</b> — filmlar bo‘limi.\n\n"
-        "🔍 <b>Global qidiruv</b> — anime va kinoni "
-        "birgalikda qidirish.\n\n"
+        "🔍 <b>Global qidiruv</b> — anime va kinoni birgalikda qidirish.\n\n"
         "⭐ <b>Sevimlilar</b> — saqlangan kontent.\n\n"
         "🕘 <b>Xronologiya</b> — ko‘rilgan kontent.\n\n"
         "👤 <b>Profil</b> — shaxsiy statistika.\n\n"
@@ -1136,9 +1014,9 @@ async def help_menu(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # TEXT SEARCH
-# =========================================================
+# =========================
 
 @dp.message(F.text)
 async def text_handler(message: Message):
@@ -1161,29 +1039,26 @@ async def text_handler(message: Message):
     )
 
 
-# =========================================================
-# ADMIN PANEL
-# =========================================================
+# =========================
+# ADMIN
+# =========================
 
 def admin_menu():
 
     return InlineKeyboardMarkup(
         inline_keyboard=[
-
             [
                 InlineKeyboardButton(
                     text="📊 Statistika",
                     callback_data="admin_stats"
                 )
             ],
-
             [
                 InlineKeyboardButton(
                     text="🔙 Bosh menyu",
                     callback_data="home"
                 )
             ]
-
         ]
     )
 
@@ -1192,11 +1067,9 @@ def admin_menu():
 async def admin(message: Message):
 
     if message.from_user.id != OWNER_ID:
-
         await message.answer(
             "⛔ Sizda admin huquqi yo‘q."
         )
-
         return
 
     await message.answer(
@@ -1210,12 +1083,10 @@ async def admin(message: Message):
 async def admin_stats(callback: CallbackQuery):
 
     if callback.from_user.id != OWNER_ID:
-
         await callback.answer(
             "⛔ Ruxsat yo‘q.",
             show_alert=True
         )
-
         return
 
     total_users = get_total_users()
@@ -1230,9 +1101,9 @@ async def admin_stats(callback: CallbackQuery):
     await callback.answer()
 
 
-# =========================================================
+# =========================
 # STARTUP
-# =========================================================
+# =========================
 
 async def main():
 
@@ -1245,10 +1116,5 @@ async def main():
     await dp.start_polling(bot)
 
 
-# =========================================================
-# RUN
-# =========================================================
-
 if __name__ == "__main__":
     asyncio.run(main())
-```
