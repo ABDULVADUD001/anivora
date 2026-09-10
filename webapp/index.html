@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>AniVora</title>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #09070f;
+      --card: #14101d;
+      --card2: #1b1527;
+      --purple: #8b5cf6;
+      --purple2: #a855f7;
+      --text: #ffffff;
+      --muted: #9993a8;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 50% -10%, rgba(139,92,246,.25), transparent 35%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    .app {
+      max-width: 700px;
+      margin: auto;
+      padding: 18px 16px;
+    }
+
+    /* HEADER */
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 900;
+      box-shadow: 0 8px 25px rgba(139,92,246,.25);
+    }
+
+    .brand-name {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .brand-name span {
+      color: #a855f7;
+    }
+
+    .profile-btn {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: var(--card);
+      color: white;
+      font-size: 19px;
+      cursor: pointer;
+    }
+
+    /* SEARCH */
+
+    .search {
+      height: 53px;
+      background: rgba(20,16,29,.9);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .search-icon {
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    .search input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 15px;
+    }
+
+    .search input::placeholder {
+      color: #777182;
+    }
+
+    /* QUICK MENU */
+
+    .quick-menu {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 11px;
+      margin-bottom: 28px;
+    }
+
+    .quick {
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, #171220, #100d17);
+      border-radius: 17px;
+      padding: 17px;
+      text-align: left;
+      color: white;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .quick:active {
+      transform: scale(.97);
+    }
+
+    .quick .icon {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .quick strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .quick small {
+      color: var(--muted);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* SECTION */
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .section-title h2 {
+      font-size: 19px;
+    }
+
+    .see-all {
+      color: #a78bfa;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* POSTERS */
+
+    .poster-row {
+      display: flex;
+      gap: 13px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+
+    .poster-row::-webkit-scrollbar {
+      display: none;
+    }
+
+    .anime-card {
+      min-width: 142px;
+      width: 142px;
+      cursor: pointer;
+    }
+
+    .poster {
+      width: 142px;
+      height: 205px;
+      border-radius: 15px;
+      object-fit: cover;
+      background: #1b1625;
+      display: block;
+    }
+
+    .anime-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .anime-meta {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    /* PASS */
+
+    .pass-card {
+      background:
+        radial-gradient(circle at 90% 10%, rgba(168,85,247,.4), transparent 35%),
+        linear-gradient(135deg, #221638, #120d1b);
+      border: 1px solid rgba(168,85,247,.25);
+      border-radius: 20px;
+      padding: 21px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pass-card h2 {
+      font-size: 21px;
+      margin-bottom: 7px;
+    }
+
+    .pass-card p {
+      color: #b8aec7;
+      font-size: 13px;
+      line-height: 1.5;
+      max-width: 85%;
+    }
+
+    .pass-button {
+      margin-top: 16px;
+      border: none;
+      background: linear-gradient(135deg, #8b5cf6, #a855f7);
+      color: white;
+      border-radius: 12px;
+      padding: 11px 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* UPDATES */
+
+    .update {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .update img {
+      width: 55px;
+      height: 70px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .update-info {
+      flex: 1;
+    }
+
+    .update-info strong {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .update-info span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .episode {
+      background: rgba(139,92,246,.15);
+      color: #b794ff;
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* PAGES */
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .page-header h1 {
+      font-size: 21px;
+    }
+
+    /* CATEGORY */
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .category {
+      padding: 20px;
+      border-radius: 17px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: white;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .category-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .category strong {
+      display: block;
+    }
+
+    .category span {
+      color: var(--muted);
+      font-size: 11px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* PROFILE */
+
+    .profile {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      margin: auto;
+      background: linear-gradient(135deg,#7c3aed,#c084fc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .profile h2 {
+      font-size: 19px;
+    }
+
+    .profile p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      background: #0f0c15;
+      padding: 14px 5px;
+      border-radius: 12px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 17px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    /* HELP */
+
+    .help-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+
+    .help-box h3 {
+      font-size: 15px;
+      margin-bottom: 7px;
+    }
+
+    .help-box p {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    /* BOTTOM NAV */
+
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 10px;
+      transform: translateX(-50%);
+      width: min(680px, calc(100% - 20px));
+      height: 67px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: rgba(18,14,25,.94);
+      backdrop-filter: blur(18px);
+      border-radius: 20px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 5px;
+      z-index: 100;
+      box-shadow: 0 10px 40px rgba(0,0,0,.4);
+    }
+
+    .nav-item {
+      border: none;
+      background: none;
+      color: #777182;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 10px;
+      transition: .2s;
+    }
+
+    .nav-item .nav-icon {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+
+    .nav-item.active {
+      color: #b58cff;
+      background: rgba(139,92,246,.12);
+    }
+
+    /* EMPTY */
+
+    .empty {
+      text-align: center;
+      padding: 70px 20px;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      font-size: 50px;
+      margin-bottom: 15px;
+    }
+
+    /* DESKTOP */
+
+    @media (min-width: 700px) {
+      .app {
+        padding-top: 28px;
+      }
+
+      .quick-menu {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .anime-card {
+        min-width: 155px;
+        width: 155px;
+      }
+
+      .poster {
+        width: 155px;
+        height: 225px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HOME -->
+  <div id="homePage" class="page active">
+
+    <div class="header">
+      <div class="brand">
+        <div class="logo">A</div>
+        <div class="brand-name">Ani<span>Vora</span></div>
+      </div>
+
+      <button class="profile-btn" onclick="showPage('profilePage')">
+        👤
+      </button>
+    </div>
+
+    <div class="search">
+      <span class="search-icon">⌕</span>
+      <input
+        id="searchInput"
+        type="text"
+        placeholder="Anime yoki kino qidiring..."
+        onkeydown="search(event)"
+      >
+    </div>
+
+    <div class="quick-menu">
+
+      <button class="quick" onclick="showPage('animePage')">
+        <div class="icon">🎌</div>
+        <strong>Anime</strong>
+        <small>Anime olami</small>
+      </button>
+
+      <button class="quick" onclick="showPage('moviePage')">
+        <div class="icon">🎬</div>
+        <strong>Kino</strong>
+        <small>Filmlar</small>
+      </button>
+
+      <button class="quick" onclick="searchFocus()">
+        <div class="icon">🔍</div>
+        <strong>Global qidiruv</strong>
+        <small>Anime + Kino</small>
+      </button>
+
+      <button class="quick" onclick="showPage('passPage')">
+        <div class="icon">✦</div>
+        <strong>AniVora Pass</strong>
+        <small>Premium imkoniyatlar</small>
+      </button>
+
+    </div>
+
+    <section class="section">
+
+      <div class="section-title">
+        <h2>🔥 Yangi animelar</h2>
+        <span class="see-all" onclick="showPage('animePage')">
+          Barchasi →
+        </span>
+      </div>
+
+      <div class="poster-row">
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">The Fragrant Flower</div>
+          <div class="anime-meta">Anime • Yangi</div>
+        </div>
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">One Piece</div>
+          <div class="anime-meta">Anime • Ongoing</div>
+        </div>
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">Jujutsu Kaisen</div>
+          <div class="anime-meta">Anime • Completed</div>
+        </div>
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">Solo Leveling</div>
+          <div class="anime-meta">Anime • Popular</div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="section">
+
+      <div class="section-title">
+        <h2>🎬 Yangi kinolar</h2>
+        <span class="see-all" onclick="showPage('moviePage')">
+          Barchasi →
+        </span>
+      </div>
+
+      <div class="poster-row">
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">New Movie</div>
+          <div class="anime-meta">Kino • 2026</div>
+        </div>
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">Action Movie</div>
+          <div class="anime-meta">Kino • 2026</div>
+        </div>
+
+        <div class="anime-card">
+          <div class="poster"></div>
+          <div class="anime-title">Adventure</div>
+          <div class="anime-meta">Kino • 2026</div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <section class="section">
+
+      <div class="pass-card">
+        <h2>✦ AniVora Pass</h2>
+        <p>
+          Reklamasiz foydalanish, premium imkoniyatlar
+          va ko‘plab qo‘shimcha funksiyalar.
+        </p>
+
+        <button class="pass-button" onclick="showPage('passPage')">
+          Pass haqida →
+        </button>
+      </div>
+
+    </section>
+
+    <section class="section">
+
+      <div class="section-title">
+        <h2>⚡ So‘nggi yangilanishlar</h2>
+      </div>
+
+      <div class="update">
+        <div class="poster"></div>
+        <div class="update-info">
+          <strong>Anime nomi</strong>
+          <span>Yangi qism qo‘shildi</span>
+        </div>
+        <div class="episode">EP 12</div>
+      </div>
+
+      <div class="update">
+        <div class="poster"></div>
+        <div class="update-info">
+          <strong>Another Anime</strong>
+          <span>Yangi qism qo‘shildi</span>
+        </div>
+        <div class="episode">EP 08</div>
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- ANIME PAGE -->
+
+  <div id="animePage" class="page">
+
+    <div class="page-header">
+      <button class="back-btn" onclick="showPage('homePage')">←</button>
+      <h1>🎌 Anime</h1>
+    </div>
+
+    <div class="categories">
+
+      <button class="category">
+        <div class="category-icon">🆕</div>
+        <strong>Yangi animelar</strong>
+        <span>Eng so‘nggi anime</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">🔥</div>
+        <strong>Mashhur</strong>
+        <span>Top animelar</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">🟢</div>
+        <strong>Ongoing</strong>
+        <span>Hozir chiqayotganlar</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">✅</div>
+        <strong>Completed</strong>
+        <span>Tugagan animelar</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">🎲</div>
+        <strong>Random</strong>
+        <span>Tasodifiy anime</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">⭐</div>
+        <strong>Sevimlilar</strong>
+        <span>Siz saqlaganlar</span>
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- MOVIE PAGE -->
+
+  <div id="moviePage" class="page">
+
+    <div class="page-header">
+      <button class="back-btn" onclick="showPage('homePage')">←</button>
+      <h1>🎬 Kino</h1>
+    </div>
+
+    <div class="categories">
+
+      <button class="category">
+        <div class="category-icon">🆕</div>
+        <strong>Yangi kinolar</strong>
+        <span>Eng so‘nggi filmlar</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">🔥</div>
+        <strong>Mashhur</strong>
+        <span>Top filmlar</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">🎭</div>
+        <strong>Janrlar</strong>
+        <span>Action, Comedy...</span>
+      </button>
+
+      <button class="category">
+        <div class="category-icon">📅</div>
+        <strong>Yillar</strong>
+        <span>Film yilini tanlash</span>
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- PASS PAGE -->
+
+  <div id="passPage" class="page">
+
+    <div class="page-header">
+      <button class="back-btn" onclick="showPage('homePage')">←</button>
+      <h1>✦ AniVora Pass</h1>
+    </div>
+
+    <div class="pass-card">
+      <h2>Premium tajriba</h2>
+
+      <p>
+        AniVora Pass orqali premium funksiyalardan
+        foydalaning.
+      </p>
+
+      <button class="pass-button">
+        Tariflarni ko‘rish
+      </button>
+    </div>
+
+    <br>
+
+    <div class="categories">
+
+      <div class="category">
+        <div class="category-icon">🚫</div>
+        <strong>Reklamasiz</strong>
+        <span>Toza va qulay foydalanish</span>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">🔔</div>
+        <strong>Premium bildirishnomalar</strong>
+        <span>Sevimli kontentingizni kuzating</span>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">⭐</div>
+        <strong>Premium imkoniyatlar</strong>
+        <span>Qo‘shimcha funksiyalar</span>
+      </div>
+
+      <div class="category">
+        <div class="category-icon">⚡</div>
+        <strong>Tezkor kirish</strong>
+        <span>Premium foydalanuvchilar uchun</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- PROFILE PAGE -->
+
+  <div id="profilePage" class="page">
+
+    <div class="page-header">
+      <button class="back-btn" onclick="showPage('homePage')">←</button>
+      <h1>👤 Profil</h1>
+    </div>
+
+    <div class="profile">
+
+      <div class="avatar">A</div>
+
+      <h2>AniVora User</h2>
+
+      <p>Telegram foydalanuvchisi</p>
+
+      <div class="profile-stats">
+
+        <div class="stat">
+          <strong>0</strong>
+          <span>Ko‘rilgan</span>
+        </div>
+
+        <div class="stat">
+          <strong>0</strong>
+          <span>Sevimli</span>
+        </div>
+
+        <div class="stat">
+          <strong>Free</strong>
+          <span>Status</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- HELP PAGE -->
+
+  <div id="helpPage" class="page">
+
+    <div class="page-header">
+      <button class="back-btn" onclick="showPage('homePage')">←</button>
+      <h1>❓ Yordam</h1>
+    </div>
+
+    <div class="help-box">
+      <h3>🎌 Anime qanday qidiriladi?</h3>
+      <p>
+        Global qidiruvdan foydalanib anime yoki kino
+        nomini yozing.
+      </p>
+    </div>
+
+    <div class="help-box">
+      <h3>🎬 Kino qanday topiladi?</h3>
+      <p>
+        Global qidiruv anime va filmlarni birgalikda
+        qidirish imkonini beradi.
+      </p>
+    </div>
+
+    <div class="help-box">
+      <h3>✦ AniVora Pass nima?</h3>
+      <p>
+        Premium foydalanuvchilar uchun qo‘shimcha
+        imkoniyatlar taqdim etadi.
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- SEARCH PAGE -->
+
+  <div id="searchPage" class="page">
+
+    <div class="page-header">
+      <button class="back-btn" onclick="showPage('homePage')">←</button>
+      <h1>🔍 Global qidiruv</h1>
+    </div>
+
+    <div class="search">
+      <span class="search-icon">⌕</span>
+
+      <input
+        id="globalSearch"
+        type="text"
+        placeholder="Anime yoki kino..."
+      >
+    </div>
+
+    <div id="searchResults" class="empty">
+      <div class="empty-icon">🔎</div>
+      <p>Anime yoki kino nomini qidiring</p>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+  <button class="nav-item active" onclick="showPage('homePage', this)">
+    <span class="nav-icon">⌂</span>
+    Bosh sahifa
+  </button>
+
+  <button class="nav-item" onclick="showPage('animePage', this)">
+    <span class="nav-icon">🎌</span>
+    Anime
+  </button>
+
+  <button class="nav-item" onclick="showPage('searchPage', this)">
+    <span class="nav-icon">⌕</span>
+    Qidiruv
+  </button>
+
+  <button class="nav-item" onclick="showPage('passPage', this)">
+    <span class="nav-icon">✦</span>
+    Pass
+  </button>
+
+  <button class="nav-item" onclick="showPage('profilePage', this)">
+    <span class="nav-icon">♙</span>
+    Profil
+  </button>
+
+</div>
+
+
+<script>
+
+  // Telegram Mini App
+
+  const tg = window.Telegram?.WebApp;
+
+  if (tg) {
+    tg.ready();
+    tg.expand();
+  }
+
+
+  // PAGE SYSTEM
+
+  function showPage(pageId, navButton = null) {
+
+    document.querySelectorAll(".page").forEach(page => {
+      page.classList.remove("active");
+    });
+
+    const page = document.getElementById(pageId);
+
+    if (page) {
+      page.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+      item.classList.remove("active");
+    });
+
+    if (navButton) {
+      navButton.classList.add("active");
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+
+
+  // SEARCH
+
+  function search(event) {
+
+    if (event.key !== "Enter") return;
+
+    const value = event.target.value.trim();
+
+    if (!value) return;
+
+    document.getElementById("globalSearch").value = value;
+
+    showPage("searchPage");
+
+    performSearch(value);
+  }
+
+
+  function searchFocus() {
+
+    showPage("searchPage");
+
+    setTimeout(() => {
+      document.getElementById("globalSearch").focus();
+    }, 200);
+  }
+
+
+  function performSearch(query) {
+
+    const results = document.getElementById("searchResults");
+
+    results.innerHTML = `
+      <div class="empty-icon">⏳</div>
+      <p>"${escapeHTML(query)}" qidirilmoqda...</p>
+    `;
+
+    // Keyingi bosqichda bu yerga
+    // AniList + Kino API ulanadi.
+
+    setTimeout(() => {
+
+      results.innerHTML = `
+        <div class="empty-icon">🎬</div>
+        <p>
+          Hozircha API ulanmagan.<br>
+          Keyingi bosqichda Anime + Kino qidiruvi ishlaydi.
+        </p>
+      `;
+
+    }, 500);
+  }
+
+
+  function escapeHTML(text) {
+
+    return text
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+</script>
+
+</body>
+</html>
